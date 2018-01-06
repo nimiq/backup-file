@@ -47,7 +47,7 @@ class WalletBackup {
     }
 
     _drawIdenticon(address) {
-        IdenticonImgFactory.image(address).then($img => {
+        IdenticonImg.image(address).then($img => {
             const size = WalletBackup.IDENTICON_SIZE;
             const pad = (this._width - size) / 2;
             const x = pad;
