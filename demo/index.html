@@ -1,38 +1,49 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<script src="/robohash/dist/robohash.min.js"></script>
-<script src="/x-identicon/src/identicon-factory.js"></script>
-<script src="/x-identicon/src/identicon-img-factory.js"></script>
-<script src="/qr-encoder/qr-encoder.min.js"></script>
-<script src="../wallet-backup.js"></script>
-<a>
-    <img tabindex="-1">
-</a>
-<script>
-const address = 'NQ11 CM1M 9LFL 8K8E G3FD AQNF 1J3Q DJXR E735';
-const privateKey = 'bc6af0c1b72e0a98439769b8570650ae86f6b3f4261b41900ec373e169449139bc6af0c1b72e0a98439769b8570650ae86f6b3f4261b41900ec373e169449139'
-const $img = document.querySelector('img');
-const $a = document.querySelector('a');
-const backup = new WalletBackup(address, privateKey);
-setTimeout(e => {
-    backup.toObjectUrl().then(url => {
-        $img.src = url
-        // if (typeof a.download === 'undefined') return;
-        $a.href = url;
-        $a.download = backup.filename();
-    });
-}, 1000);
-</script>
-<style type="text/css">
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+<!DOCTYPE html>
+<html>
 
-img {
-    box-sizing: border-box;
-    padding: 16px;
-    width: 420px;
-    max-width: 100%;
-}
-</style>
+<head>
+    <title>Wallet Backup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script src="/robohash/dist/robohash.min.js"></script>
+    <script src="/x-identicon/src/identicon-factory.js"></script>
+    <script src="/x-identicon/src/identicon-img-factory.js"></script>
+    <script src="/qr-encoder/qr-encoder.min.js"></script>
+    <script src="../wallet-backup.js"></script>
+    <style type="text/css">
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    img {
+        box-sizing: border-box;
+        padding: 16px;
+        width: 420px;
+        max-width: 100%;
+    }
+    </style>
+</head>
+
+<body>
+    <a>
+        <img tabindex="-1">
+    </a>
+    <script>
+    const address = 'NQ11 CM1M 9LFL 8K8E G3FD AQNF 1J3Q DJXR E735';
+    const privateKey = 'bc6af0c1b72e0a98439769b8570650ae86f6b3f4261b41900ec373e169449139bc6af0c1b72e0a98439769b8570650ae86f6b3f4261b41900ec373e169449139'
+    const $img = document.querySelector('img');
+    const $a = document.querySelector('a');
+    const backup = new WalletBackup(address, privateKey);
+    setTimeout(e => {
+        backup.toObjectUrl().then(url => {
+            $img.src = url
+            // if (typeof a.download === 'undefined') return;
+            $a.href = url;
+            $a.download = backup.filename();
+        });
+    }, 1000);
+    </script>
+</body>
+
+</html>
