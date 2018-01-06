@@ -83,7 +83,7 @@ class WalletBackup {
 
     _drawPrivateKey(privateKey) {
         const $el = document.createElement('div');
-        QrCode.render({
+        QrEncoder.render({
             text: privateKey,
             radius: 0.8,
             ecLevel: 'M',
