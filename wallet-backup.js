@@ -105,8 +105,6 @@ class WalletBackup {
         this._ctx.drawImage($canvas, x + pad, y + pad, size - 2 * pad, size - 2 * pad);
     }
 
-
-
     _drawBackgroundGradient() {
         this._ctx.fillStyle = 'white';
         this._ctx.fillRect(0, 0, this._width, this._height);
