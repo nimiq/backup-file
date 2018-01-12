@@ -94,7 +94,7 @@ class WalletBackup {
         QrEncoder.render({
             text: privateKey,
             radius: 0.8,
-            ecLevel: 'M',
+            ecLevel: 'Q',
             fill: '#2e0038',
             background: 'transparent',
             size: Math.min(240, (window.innerWidth - 64))
