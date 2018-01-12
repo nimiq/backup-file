@@ -19,6 +19,14 @@ class WalletBackup {
         this._draw(address, privateKey);
     }
 
+    static calculateQrPosition(walletBackupWidth = WalletBackup.WIDTH, walletBackupHeight = WalletBackup.HEIGHT) {
+        const size = WalletBackup.QR_SIZE;
+        const x = (walletBackupWidth - size) / 2;
+        const y = (walletBackupHeight + walletBackupHeight / WalletBackup.PHI) / 2 - size / 2;
+        const padding = WalletBackup.PADDING * 1.5;
+        return { x, y, size, padding };
+    }
+
     filename() {
         return this._address.replace(/ /g, '-') + '.png';
     }
@@ -93,16 +101,15 @@ class WalletBackup {
         }, $el);
 
         const $canvas = $el.querySelector('canvas');
-        const size = WalletBackup.QR_SIZE;
-        const x = (this._width - size) / 2;
-        const y = (this._height + this._height / 1.618) / 2 - size / 2;
-        const pad = WalletBackup.PADDING * 1.5;
+        const qrPosition = WalletBackup.calculateQrPosition(this._width, this._height);
 
         this._ctx.fillStyle = 'white';
         this._ctx.strokeStyle = 'white';
-        this._roundRect(x, y, size, size, 16, true);
+        this._roundRect(qrPosition.x, qrPosition.y, qrPosition.size, qrPosition.size, 16, true);
 
-        this._ctx.drawImage($canvas, x + pad, y + pad, size - 2 * pad, size - 2 * pad);
+        const padding = qrPosition.padding;
+        this._ctx.drawImage($canvas, qrPosition.x + padding, qrPosition.y + padding, qrPosition.size - 2 * padding,
+            qrPosition.size - 2 * padding);
     }
 
     _drawBackgroundGradient() {
@@ -118,7 +125,7 @@ class WalletBackup {
 
     _roundRect(x, y, width, height, radius, fill, stroke) {
         const ctx = this._ctx;
-        if (typeof stroke == 'undefined') {
+        if (typeof stroke === 'undefined') {
             stroke = true;
         }
         if (typeof radius === 'undefined') {

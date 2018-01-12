@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wallet Backup Fuzz</title>
+    <script src="/robohash/dist/robohash.min.js"></script>
+    <script src="/identicon/src/identicon.js"></script>
+    <script src="/identicon/src/identicon-img.js"></script>
+    <script src="/qr-encoder/qr-encoder.min.js"></script>
+    <script src="/wallet-backup/wallet-backup.js"></script>
+    <script src="/qr-scanner/qr-scanner.min.js"></script>
+    <script src="/core/dist/web.js"></script>
+</head>
+<body>
+<style>
+    #container {
+        max-width: 800px;
+        margin: auto;
+    }
+
+    .section {
+        margin-top: 16px;
+    }
+
+    #failed-samples div {
+        margin-top: 8px;
+    }
+
+    canvas {
+        display: block;
+    }
+</style>
+
+<div id="container">
+    <div class="section">
+        <input type="number" id="input-iterations" placeholder="Iterations">
+        <button id="start-button">Start Fuzzing</button>
+    </div>
+    <div class="section">
+        <div>Iterations: <span id="iteration-count">0</span></div>
+        <div>Failed: <span id="failed-count">0</span></div>
+    </div>
+    <div class="section" id="wallet-rendering">
+        <label>
+            <input type="checkbox" id="wallet-rendering-checkbox">
+            Render Wallets
+        </label>
+    </div>
+    <div class="section" id="failed-samples">
+        <h3>Failed samples:</h3>
+    </div>
+</div>
+
+<script type="text/javascript">
+    const startButton = document.getElementById('start-button');
+    const iterationCount = document.getElementById('iteration-count');
+    const failedCount = document.getElementById('failed-count');
+    const failedSamples = document.getElementById('failed-samples');
+    const walletRenderingSection = document.getElementById('wallet-rendering');
+    const walletRendingCheckbox = document.getElementById('wallet-rendering-checkbox');
+
+    const walletBackup = new WalletBackup('empty', 'empty');
+    const qrPosition = WalletBackup.calculateQrPosition();
+    qrPosition.x += qrPosition.padding / 2; /* add half padding to cut away the rounded corners */
+    qrPosition.y += qrPosition.padding / 2;
+    qrPosition.width = qrPosition.size - qrPosition.padding;
+    qrPosition.height = qrPosition.size - qrPosition.padding;
+
+    const qrCanvas = document.createElement('canvas');
+    const qrWorker = new Worker('/qr-scanner/qr-scanner-worker.min.js');
+
+    async function runIteration() {
+        const wallet = await Nimiq.Wallet.createVolatile();
+        const userFriendlyAddress = wallet.address.toUserFriendlyAddress();
+        const privateKeyHex = wallet.keyPair.privateKey.toHex();
+        walletBackup._draw(userFriendlyAddress, privateKeyHex);
+        let scanResult;
+        try {
+            scanResult = await QrScanner.scanImage(walletBackup.$canvas, qrPosition, qrWorker, qrCanvas, false, true);
+        } catch(e) {
+            throw Error('Error: ' + (e.message || e) + '. Expected ' + privateKeyHex);
+        }
+        if (scanResult !== privateKeyHex) {
+            throw Error('Read Error. Expected '+privateKeyHex+', got '+scanResult);
+        }
+    }
+
+    async function run() {
+        startButton.disabled = true;
+        iterationCount.textContent = 0;
+        failedCount.textContent = 0;
+        const totalIterations = parseInt(document.getElementById('input-iterations').value) || 10000;
+        for (let iteration=0; iteration < totalIterations; ++iteration) {
+            if (iteration % 50 === 0) {
+                iterationCount.textContent = iteration;
+            }
+            try {
+                await runIteration();
+            } catch(e) {
+                console.error(e.message);
+                failedCount.textContent = parseInt(failedCount.textContent) + 1;
+                const failedSampleEntry = document.createElement('div');
+                failedSampleEntry.textContent = e.message || e;
+                failedSamples.appendChild(failedSampleEntry);
+            }
+        }
+        startButton.disabled = false;
+        iterationCount.textContent = totalIterations;
+        alert('Finished');
+    }
+
+    function toggleWalletRendering() {
+        if (walletRendingCheckbox.checked) {
+            walletRenderingSection.appendChild(walletBackup.$canvas);
+        } else {
+            walletRenderingSection.removeChild(walletBackup.$canvas);
+        }
+    }
+
+    startButton.addEventListener('click', run);
+    walletRendingCheckbox.addEventListener('change', toggleWalletRendering);
+</script>
+</body>
+</html>
