@@ -1,4 +1,6 @@
-class WalletBackup {
+import IdenticonImg from '../identicon/src/identicon-img.js';
+import QrEncoder from '../qr-encoder/qr-encoder.min.js';
+export default class WalletBackup {
 
     static get PHI() { return 1.618 }
     static get WIDTH() { return 300 * this.PHI}
@@ -159,4 +161,4 @@ class WalletBackup {
     }
 }
 
-//todo: make it work on iOS. display img instead of canvas
+// Todo: Encrypted Private Key should have a version and a clear documentation 
