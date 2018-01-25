@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Wallet Backup Fuzz</title>
-    <script src="/robohash/dist/robohash.min.js"></script>
-    <script src="/identicon/src/identicon.js"></script>
-    <script src="/identicon/src/identicon-img.js"></script>
-    <script src="/qr-encoder/qr-encoder.min.js"></script>
-    <script src="/wallet-backup/wallet-backup.js"></script>
-    <script src="/qr-scanner/qr-scanner.min.js"></script>
-    <script src="/core/dist/web.js"></script>
+    <script src="https://cdn.nimiq.com/core/nimiq.js"></script>
 </head>
 <body>
 <style>
@@ -51,7 +45,11 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<script type="module">
+
+    import WalletBackup from '/library/wallet-backup/wallet-backup.js';
+    import QrScanner from '/library/qr-scanner/qr-scanner.min.js'
+
     const startButton = document.getElementById('start-button');
     const iterationCount = document.getElementById('iteration-count');
     const failedCount = document.getElementById('failed-count');
@@ -67,25 +65,27 @@
     qrPosition.height = qrPosition.size - qrPosition.padding;
 
     const qrCanvas = document.createElement('canvas');
-    const qrWorker = new Worker('/qr-scanner/qr-scanner-worker.min.js');
+    const qrWorker = new Worker('/library/qr-scanner/qr-scanner-worker.min.js');
+
 
     async function runIteration() {
-        const wallet = await Nimiq.Wallet.createVolatile();
-        const userFriendlyAddress = wallet.address.toUserFriendlyAddress();
-        const privateKeyHex = wallet.keyPair.privateKey.toHex();
-        walletBackup._draw(userFriendlyAddress, privateKeyHex);
+        const keys = await Nimiq.KeyPair.generate();
+        const privateKey = keys.privateKey.toHex();
+        const address = (await keys.publicKey.toAddress()).toUserFriendlyAddress();
+        walletBackup._draw(address, privateKey);
         let scanResult;
         try {
             scanResult = await QrScanner.scanImage(walletBackup.$canvas, qrPosition, qrWorker, qrCanvas, false, true);
         } catch(e) {
-            throw Error('Error: ' + (e.message || e) + '. Expected ' + privateKeyHex);
+            throw Error('Error: ' + (e.message || e) + '. Expected ' + privateKey);
         }
-        if (scanResult !== privateKeyHex) {
-            throw Error('Read Error. Expected '+privateKeyHex+', got '+scanResult);
+        if (scanResult !== privateKey) {
+            throw Error('Read Error. Expected '+privateKey+', got '+scanResult);
         }
     }
 
     async function run() {
+        await Nimiq.load();
         startButton.disabled = true;
         iterationCount.textContent = 0;
         failedCount.textContent = 0;
