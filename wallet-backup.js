@@ -3,7 +3,7 @@ import QrEncoder from '../qr-encoder/qr-encoder.min.js';
 export default class WalletBackup {
 
     static get PHI() { return 1.618 }
-    static get WIDTH() { return 300 * this.PHI}
+    static get WIDTH() { return 300 * this.PHI }
     static get HEIGHT() { return this.WIDTH * this.PHI }
     static get IDENTICON_SIZE() { return this.WIDTH / this.PHI }
     static get QR_SIZE() { return this.WIDTH * (1 - 1 / this.PHI) }
@@ -18,7 +18,7 @@ export default class WalletBackup {
         this.$canvas = $canvas;
         this._address = address;
         this._ctx = $canvas.getContext('2d');
-        this._draw(address, privateKey);
+        this._drawPromise = this._draw(address, privateKey);
     }
 
     static calculateQrPosition(walletBackupWidth = WalletBackup.WIDTH, walletBackupHeight = WalletBackup.HEIGHT) {
@@ -33,11 +33,17 @@ export default class WalletBackup {
         return this._address.replace(/ /g, '-') + '.png';
     }
 
-    toDataUrl() {
+    async toDataUrl() {
+        await this._drawPromise;
         return this.$canvas.toDataURL();
     }
 
-    toObjectUrl() {
+    async toObjectUrl() {
+        await this._drawPromise;
+        return this._toObjectUrl();
+    }
+
+    _toObjectUrl() {
         return new Promise(resolve => {
             this.$canvas.toBlob(blob => {
                 const url = URL.createObjectURL(blob);
@@ -48,22 +54,21 @@ export default class WalletBackup {
 
     _draw(address, privateKey) {
         this._drawBackgroundGradient();
-        this._drawIdenticon(address);
         this._drawPrivateKey(privateKey);
 
         this._setFont();
         this._drawAddress(address);
         this._drawHeader();
+        return this._drawIdenticon(address);
     }
 
-    _drawIdenticon(address) {
-        IdenticonImg.image(address).then($img => {
-            const size = WalletBackup.IDENTICON_SIZE;
-            const pad = (this._width - size) / 2;
-            const x = pad;
-            const y = this._height - this._width - size / 2;
-            this._ctx.drawImage($img, x, y, size, size);
-        });
+    async _drawIdenticon(address) {
+        const $img = await IdenticonImg.image(address);
+        const size = WalletBackup.IDENTICON_SIZE;
+        const pad = (this._width - size) / 2;
+        const x = pad;
+        const y = this._height - this._width - size / 2;
+        this._ctx.drawImage($img, x, y, size, size);
     }
 
     _setFont() {
@@ -162,4 +167,4 @@ export default class WalletBackup {
 }
 
 // Todo: [high priority] Backup should get tested automatically like in fuzzer. if backup can't get scanned; re-encrypt with different nonce
-// Todo: [high priority] Encrypted Private Key should have a version and a clear documentation 
+// Todo: [high priority] Encrypted Private Key should have a version and a clear documentation
