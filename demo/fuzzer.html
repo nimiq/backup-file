@@ -47,8 +47,8 @@
 
 <script type="module">
 
-    import WalletBackup from '/library/wallet-backup/wallet-backup.js';
-    import QrScanner from '/library/qr-scanner/qr-scanner.min.js'
+    import WalletBackup from '/libraries/wallet-backup/wallet-backup.js';
+    import QrScanner from '/libraries/qr-scanner/qr-scanner.min.js'
 
     const startButton = document.getElementById('start-button');
     const iterationCount = document.getElementById('iteration-count');
@@ -65,7 +65,7 @@
     qrPosition.height = qrPosition.size - qrPosition.padding;
 
     const qrCanvas = document.createElement('canvas');
-    const qrWorker = new Worker('/library/qr-scanner/qr-scanner-worker.min.js');
+    const qrWorker = new Worker('/libraries/qr-scanner/qr-scanner-worker.min.js');
 
 
     async function runIteration() {
