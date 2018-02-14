@@ -35,7 +35,7 @@ export default class WalletBackup {
 
     async toDataUrl() {
         await this._drawPromise;
-        return this.$canvas.toDataURL();
+        return this.$canvas.toDataURL().replace('#', '%23');
     }
 
     async toObjectUrl() {
@@ -59,6 +59,7 @@ export default class WalletBackup {
         this._setFont();
         this._drawAddress(address);
         this._drawHeader();
+
         return this._drawIdenticon(address);
     }
 
