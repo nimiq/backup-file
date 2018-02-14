@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Wallet Backup Fuzz</title>
-    <script src="https://cdn.nimiq.com/core/nimiq.js"></script>
+    <script src="https://cdn.nimiq-network.com/branches/master/nimiq.js"></script>
 </head>
 <body>
 <style>
@@ -67,25 +67,41 @@
     const qrCanvas = document.createElement('canvas');
     const qrWorker = new Worker('/libraries/qr-scanner/qr-scanner-worker.min.js');
 
+    const initialization = new Promise(resolve => {
+        Nimiq.init(resolve, (code) => {
+            switch (code) {
+                case Nimiq.ERR_WAIT:
+                    alert('Already running in another tab');
+                    break;
+                case Nimiq.ERR_UNSUPPORTED:
+                    alert('Browser not supported');
+                    break;
+                default:
+                    alert('Nimiq initialization error');
+                    break;
+            }
+        });
+    });
 
     async function runIteration() {
-        const keys = await Nimiq.KeyPair.generate();
-        const privateKey = keys.privateKey.toHex();
-        const address = (await keys.publicKey.toAddress()).toUserFriendlyAddress();
-        walletBackup._draw(address, privateKey);
+        const keys = Nimiq.KeyPair.generate();
+        const exportedKeys = await keys.exportEncrypted('password');
+        const keysBase64 = Nimiq.BufferUtils.toBase64(exportedKeys);
+        const address = keys.publicKey.toAddress().toUserFriendlyAddress();
+        walletBackup._draw(address, keysBase64);
         let scanResult;
         try {
             scanResult = await QrScanner.scanImage(walletBackup.$canvas, qrPosition, qrWorker, qrCanvas, false, true);
         } catch(e) {
-            throw Error('Error: ' + (e.message || e) + '. Expected ' + privateKey);
+            throw Error('Error: ' + (e.message || e) + '. Expected ' + keysBase64);
         }
-        if (scanResult !== privateKey) {
-            throw Error('Read Error. Expected '+privateKey+', got '+scanResult);
+        if (scanResult !== keysBase64) {
+            throw Error('Read Error. Expected '+keysBase64+', got '+scanResult);
         }
     }
 
     async function run() {
-        await Nimiq.load();
+        await initialization;
         startButton.disabled = true;
         iterationCount.textContent = 0;
         failedCount.textContent = 0;
@@ -97,7 +113,7 @@
             try {
                 await runIteration();
             } catch(e) {
-                console.error(e.message);
+                console.error(e || e.message);
                 failedCount.textContent = parseInt(failedCount.textContent) + 1;
                 const failedSampleEntry = document.createElement('div');
                 failedSampleEntry.textContent = e.message || e;
