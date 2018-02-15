@@ -167,5 +167,4 @@ export default class WalletBackup {
     }
 }
 
-// Todo: [high priority] Backup should get tested automatically like in fuzzer. if backup can't get scanned; re-encrypt with different nonce
 // Todo: [high priority] Encrypted Private Key should have a version and a clear documentation
