@@ -74,7 +74,7 @@ export default class WalletBackup {
 
     _setFont() {
         const ctx = this._ctx;
-        ctx.fontFamily = 'system-ui, sans-serif';
+        ctx.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif';
         ctx.textAlign = 'center';
     }
 
@@ -82,7 +82,7 @@ export default class WalletBackup {
         const ctx = this._ctx;
         const x = this._width / 2;
         const y = WalletBackup.PADDING * 6;
-        ctx.font = '500 20px system-ui';
+        ctx.font = '500 20px ' + ctx.fontFamily;
         ctx.fillStyle = 'rgba(255,255,255,0.7)';
         ctx.fillText('WALLET BACKUP', x, y);
     }
@@ -92,7 +92,7 @@ export default class WalletBackup {
         const qrSize = WalletBackup.QR_SIZE;
         const x = this._width / 2;
         const y = this._width;
-        ctx.font = '500 15px system-ui';
+        ctx.font = '500 15px ' + ctx.fontFamily;
         ctx.fillStyle = 'white';
         ctx.fillText(address, x, y);
     }
