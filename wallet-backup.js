@@ -1,4 +1,4 @@
-import IdenticonImg from '../identicon/src/identicon-img.js';
+import Iqons from '../iqons/dist/iqons.min.js';
 import QrEncoder from '../qr-encoder/qr-encoder.min.js';
 export default class WalletBackup {
 
@@ -64,7 +64,7 @@ export default class WalletBackup {
     }
 
     async _drawIdenticon(address) {
-        const $img = await IdenticonImg.image(address);
+        const $img = await Iqons.image(address);
         const size = WalletBackup.IDENTICON_SIZE;
         const pad = (this._width - size) / 2;
         const x = pad;
