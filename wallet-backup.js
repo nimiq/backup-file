@@ -166,5 +166,3 @@ export default class WalletBackup {
         }
     }
 }
-
-// Todo: [high priority] Encrypted Private Key should have a version and a clear documentation
