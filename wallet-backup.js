@@ -84,7 +84,7 @@ export default class WalletBackup {
         const y = WalletBackup.PADDING * 6;
         ctx.font = '500 20px ' + ctx.fontFamily;
         ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.fillText('ACCOUNT BACKUP', x, y);
+        ctx.fillText('ACCOUNT ACCESS FILE', x, y);
     }
 
     _drawAddress(address) {
