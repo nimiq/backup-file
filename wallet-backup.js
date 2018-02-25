@@ -9,7 +9,7 @@ export default class WalletBackup {
     static get QR_SIZE() { return this.WIDTH * (1 - 1 / this.PHI) }
     static get PADDING() { return 8 }
 
-    constructor(address, privateKey) {
+    constructor(address, encodedPrivKey) {
         this._width = WalletBackup.WIDTH;
         this._height = WalletBackup.HEIGHT;
         const $canvas = document.createElement('canvas');
@@ -18,7 +18,7 @@ export default class WalletBackup {
         this.$canvas = $canvas;
         this._address = address;
         this._ctx = $canvas.getContext('2d');
-        this._drawPromise = this._draw(address, privateKey);
+        this._drawPromise = this._draw(address, encodedPrivKey);
     }
 
     static calculateQrPosition(walletBackupWidth = WalletBackup.WIDTH, walletBackupHeight = WalletBackup.HEIGHT) {
@@ -52,9 +52,9 @@ export default class WalletBackup {
         })
     }
 
-    _draw(address, privateKey) {
+    _draw(address, encodedPrivKey) {
         this._drawBackgroundGradient();
-        this._drawPrivateKey(privateKey);
+        this._drawEncodedPrivKey(encodedPrivKey);
 
         this._setFont();
         this._drawAddress(address);
@@ -97,10 +97,10 @@ export default class WalletBackup {
         ctx.fillText(address, x, y);
     }
 
-    _drawPrivateKey(privateKey) {
+    _drawEncodedPrivKey(encodedPrivKey) {
         const $el = document.createElement('div');
         QrEncoder.render({
-            text: privateKey,
+            text: encodedPrivKey,
             radius: 0.8,
             ecLevel: 'Q',
             fill: '#2e0038',
