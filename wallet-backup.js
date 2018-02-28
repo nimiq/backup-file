@@ -85,6 +85,9 @@ export default class WalletBackup {
         ctx.font = '500 20px ' + ctx.fontFamily;
         ctx.fillStyle = 'rgba(255,255,255,0.7)';
         ctx.fillText('ACCOUNT ACCESS FILE', x, y);
+
+        ctx.font = '500 16px ' + ctx.fontFamily;
+        ctx.fillText('DO NOT share this File or QR Code!', x, WalletBackup.PADDING * 12.5);
     }
 
     _drawAddress(address) {
@@ -92,7 +95,7 @@ export default class WalletBackup {
         const qrSize = WalletBackup.QR_SIZE;
         const x = this._width / 2;
         const y = this._width;
-        ctx.font = '500 15px ' + ctx.fontFamily;
+        ctx.font = '500 16px ' + ctx.fontFamily;
         ctx.fillStyle = 'white';
         ctx.fillText(address, x, y);
     }
