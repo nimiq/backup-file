@@ -23,10 +23,16 @@ export default class WalletBackup {
 
     static calculateQrPosition(walletBackupWidth = WalletBackup.WIDTH, walletBackupHeight = WalletBackup.HEIGHT) {
         const size = WalletBackup.QR_SIZE;
-        const x = (walletBackupWidth - size) / 2;
-        const y = (walletBackupHeight + walletBackupHeight / WalletBackup.PHI) / 2 - size / 2;
         const padding = WalletBackup.PADDING * 1.5;
-        return { x, y, size, padding };
+
+        let x = (walletBackupWidth - size) / 2;
+        let y = (walletBackupHeight + walletBackupHeight / WalletBackup.PHI) / 2 - size / 2;
+        x += padding / 2; /* add half padding to cut away the rounded corners */
+        y += padding / 2;
+
+        const width = size - padding;
+        const height = size - padding;
+        return { x, y, size, padding, width, height };
     }
 
     filename() {
