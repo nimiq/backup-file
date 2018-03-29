@@ -41,7 +41,7 @@ export default class WalletBackup {
 
     async toDataUrl() {
         await this._drawPromise;
-        return this.$canvas.toDataURL().replace('#', '%23');
+        return this.$canvas.toDataURL().replace(/#/g, '%23');
     }
 
     async toObjectUrl() {
