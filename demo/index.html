@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Wallet Backup</title>
+    <title>Account Backup File</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <style type="text/css">
     body {
@@ -25,13 +25,13 @@
         <img tabindex="-1">
     </a>
     <script type="module">
-        import WalletBackup from '../wallet-backup.js';
+        import BackupFile from '../backup-file.js';
 
         const address = 'NQ52 R00E 3NKS DXH5 53U3 RK0V S7V4 LEH0 QV64';
         const privateKey = 'b15560371ce744c3931327205160a68ac46e2cb19bf09ddbd33bfc0292be32ad';
         const $img = document.querySelector('img');
         const $a = document.querySelector('a');
-        const backup = new WalletBackup(address, privateKey);
+        const backup = new BackupFile(address, privateKey);
         setTimeout(e => {
             backup.toDataUrl().then(url => {
                 $img.src = url;

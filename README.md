@@ -1,6 +1,6 @@
-# Wallet Backup
+# Account Backup
 
-This is a Wallet File Format designed for usability.
+This is a Account Access (aka Wallet) File Format designed for usability.
 
 - File format PNG
 	- Identicon is easily recognizable and distinguishable in Finder/Explorer/Gallery Previews

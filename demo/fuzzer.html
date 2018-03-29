@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wallet Backup Fuzz</title>
+    <title>Account Backup File Fuzz</title>
     <script src="https://cdn.nimiq-network.com/branches/master/nimiq.js"></script>
 </head>
 <body>
@@ -47,7 +47,7 @@
 
 <script type="module">
 
-    import WalletBackup from '/libraries/wallet-backup/wallet-backup.js';
+    import BackupFile from '/libraries/backup-file/backup-file.js';
     import QrScanner from '/libraries/qr-scanner/qr-scanner.min.js'
 
     const startButton = document.getElementById('start-button');
@@ -57,8 +57,8 @@
     const walletRenderingSection = document.getElementById('wallet-rendering');
     const walletRendingCheckbox = document.getElementById('wallet-rendering-checkbox');
 
-    const walletBackup = new WalletBackup('empty', 'empty');
-    const qrPosition = WalletBackup.calculateQrPosition();
+    const backupFile = new BackupFile('empty', 'empty');
+    const qrPosition = BackupFile.calculateQrPosition();
     qrPosition.x += qrPosition.padding / 2; /* add half padding to cut away the rounded corners */
     qrPosition.y += qrPosition.padding / 2;
     qrPosition.width = qrPosition.size - qrPosition.padding;
@@ -88,10 +88,10 @@
         const exportedKeys = await keys.exportEncrypted('password');
         const keysBase64 = Nimiq.BufferUtils.toBase64(exportedKeys);
         const address = keys.publicKey.toAddress().toUserFriendlyAddress();
-        walletBackup._draw(address, keysBase64);
+        backupFile._draw(address, keysBase64);
         let scanResult;
         try {
-            scanResult = await QrScanner.scanImage(walletBackup.$canvas, qrPosition, qrWorker, qrCanvas, false, true);
+            scanResult = await QrScanner.scanImage(backupFile.$canvas, qrPosition, qrWorker, qrCanvas, false, true);
         } catch(e) {
             throw Error('Error: ' + (e.message || e) + '. Expected ' + keysBase64);
         }
@@ -127,9 +127,9 @@
 
     function toggleWalletRendering() {
         if (walletRendingCheckbox.checked) {
-            walletRenderingSection.appendChild(walletBackup.$canvas);
+            walletRenderingSection.appendChild(backupFile.$canvas);
         } else {
-            walletRenderingSection.removeChild(walletBackup.$canvas);
+            walletRenderingSection.removeChild(backupFile.$canvas);
         }
     }
 
